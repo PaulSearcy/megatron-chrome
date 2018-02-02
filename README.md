@@ -1,9 +1,8 @@
-Megatron for Chrome
+IGX Helper Extension for Chrome
 ===================
-
+* Forked from (https://github.com/ancillaryfactory/megatron-chrome)
 * Adds a button to the Chrome toolbar that displays a '+' when visiting an Ingeniux-powered page
 * Hover over the button to see the current page's xID
-* Click the button to view the current page's raw XML in a new tab (tfrm=4)
+* Clicking button copies xID into user's clipboard
 
 
-[Download the extension](https://github.com/ancillaryfactory/megatron-chrome/blob/master/igx_ext.crx?raw=true)

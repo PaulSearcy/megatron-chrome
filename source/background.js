@@ -1,90 +1,70 @@
 var badgeColor = "#3cad3c";
 var xid = ''
-function get_transformed_url(current_url){
-    if (current_url.indexOf('?') > -1){
-        var prefix = '&';
-    } else {
-        var prefix = '?';
-    }
-    new_url = current_url + prefix + 'tfrm=4';
-    return new_url;
+
+const getTransformedUrl = currentUrl => currentUrl.includes('?') ? `${currentUrl}&tfrm=6` : `${currentUrl}?tfrm=6`
+
+const disableIcon = () => {
+    chrome.browserAction.disable();
+    chrome.browserAction.setTitle({'title': ''});
+    chrome.contextMenus.removeAll();
 }
 
-function get_transformed_content_type(transformed_url){
-  $.ajax({
-          type: "HEAD",
-          url: transformed_url,
-          success: function(response, status, xhr){
-            var ct = xhr.getResponseHeader("content-type") || "";
-            if (ct.indexOf('xml') > -1) {
-              chrome.browserAction.enable();
-              chrome.browserAction.setBadgeText({text:"+"});
-                $.ajax({
-                  type: "GET",
-                  url: transformed_url,
-                  success: function(data){
-                    id = $(data).find('*').eq(0).attr('ID');
-                    chrome.contextMenus.removeAll();
+const setTitle = xid => {
+    chrome.contextMenus.create({'title':xid})
+    chrome.browserAction.setTitle({'title':xid})
+}
 
-                    if (typeof id != 'undefined'){
-                      chrome.contextMenus.create({"title":id});
-                      chrome.browserAction.setTitle({"title":id});
-                      xid = id
-                    } else {
-                      chrome.browserAction.setTitle({"title":""});
-                    }
-                  }
-                });
-            } else {
-              chrome.browserAction.disable();
-              chrome.browserAction.setTitle({"title":""});
-              chrome.contextMenus.removeAll();
-            } // end check for xml response
-          } // end success function
-        });
+const cleartitle = () => chrome.browserAction.setTitle({'title':''})
+
+const getXId = async url => {
+    chrome.browserAction.enable();
+    chrome.browserAction.setBadgeText({text: "+"});
+    await fetch(url,{method: 'GET'})
+    .then(res => res.json())
+    .then(data =>{
+        xid = data[Object.keys(data)[0]].ID || ''
+        chrome.contextMenus.removeAll();
+        xid ? setTitle(xid) : cleartitle()
+    })
+}
+
+const getTransformedContentType = async transformedUrl => {
+    let checkExists = await
+        fetch(transformedUrl,{method: 'HEAD',})
+        .then(res => res.headers.get('Content-Type').includes('json'))
+    checkExists ? getXId(transformedUrl) : disableIcon()
 }
 
 // open new tab when the button is clicked
-chrome.browserAction.onClicked.addListener(function (tab) {
-    chrome.tabs.getCurrent(function(){
-    	// transformed_url = get_transformed_url(tab.url);
-    	// chrome.tabs.create({
-        // 	url: transformed_url
-        // });
-
-        function copyTextToClipboard(text) {
-            var copyFrom = document.createElement("textarea");
-            copyFrom.textContent = text;
-            var body = document.getElementsByTagName('body')[0];
-            body.appendChild(copyFrom);
-            copyFrom.select();
-            document.execCommand('copy');
-            body.removeChild(copyFrom);
+chrome.browserAction.onClicked.addListener(tab => {
+    chrome.tabs.getCurrent(() => {
+        const copyTextToClipboard = text => {
+            let copyFrom = document.createElement("textarea")
+            copyFrom.textContent = text
+            let body = document.getElementsByTagName('body')[0]
+            body.appendChild(copyFrom)
+            copyFrom.select()
+            document.execCommand('copy')
+            body.removeChild(copyFrom)
         }
-
         copyTextToClipboard(xid)
     })
+})
 
-});
+// check on pageload for JSON
+chrome.tabs.onUpdated.addListener(async (tabID, changeInfo, tab) => {
+  chrome.browserAction.setBadgeBackgroundColor({color:badgeColor})
+  chrome.browserAction.setBadgeText({text:""})
+  await getTransformedContentType( getTransformedUrl(tab.url) )
+})
 
-// check on pageload for XML
-chrome.tabs.onUpdated.addListener(function(tabID, changeInfo, tab) {
-  chrome.browserAction.setBadgeBackgroundColor({color:badgeColor});
-  chrome.browserAction.setBadgeText({text:""});
-  transformed_url = get_transformed_url(tab.url);
-  get_transformed_content_type(transformed_url);
-
-});
-
-// check the most recently activated tab for an XML response
-// to the tfrm=4 querystring
-chrome.tabs.onActivated.addListener(function(activeInfo) {
-      chrome.browserAction.setBadgeText({text:""});
-      chrome.browserAction.setBadgeBackgroundColor({color:badgeColor});
-      // how to fetch tab url using activeInfo.tabid
-      chrome.tabs.get(activeInfo.tabId, function(tab){
-        // get current url here
-        transformed_url = get_transformed_url(tab.url);
-        get_transformed_content_type(transformed_url);
-    });
-});
+// check the most recently activated tab for a JSON response
+// to the tfrm=6 querystring
+chrome.tabs.onActivated.addListener(async activeInfo => {
+    chrome.browserAction.setBadgeText({text:""})
+    chrome.browserAction.setBadgeBackgroundColor({color:badgeColor});
+    // how to fetch tab url using activeInfo.tabid
+    chrome.tabs.get(activeInfo.tabId, async tab =>
+        await getTransformedContentType( getTransformedUrl(tab.url) )
+    )
+})

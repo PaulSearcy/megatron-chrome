@@ -1,15 +1,14 @@
 {
-  "name": "test",
+  "name": "IGX ID Copy",
   "manifest_version": 2,
-  "version": "3.2",
-  "description": "Opens a new tab and adds tfrm=4 to the current URL",
+  "version": "1.0",
+  "description": "Checks the page to see if it's powered by the IGX CMS and if it does enables user to copy xID upon icon click",
   "browser_action": {
         "default_icon": "icon.png"
     },
     "background": {
         "scripts": [
-            "background.js",
-            "jquery-2.0.0.min.js"
+            "background.js"
         ]
     },
     "icons": {
