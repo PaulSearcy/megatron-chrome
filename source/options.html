@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        #blacklist li span{
+            content: 'X';
+            margin-left: 10px;
+            cursor: pointer;
+            border-width: 2px;
+            border-style: outset;
+            border-color: buttonface;
+            background-color: buttonface;
+            color: buttontext;
+            border-image: initial;
+            padding: 1px 6px;
+        }
+        #blacklist li {
+            padding: 5px;
+        }
+        .addOne {
+            height: 100%;
+            width: 100%;
+            padding: 1px 6px;
+            cursor:pointer;
+        }
+        .addOneButton {
+            padding: 0
+        }
+        #blacklistContainer {
+            margin-bottom: 20px;
+        }
+        #domainList li span {
+            content: 'X';
+            margin-left: 10px;
+            cursor: pointer;
+            border-width: 2px;
+            border-style: outset;
+            border-color: buttonface;
+            background-color: buttonface;
+            color: buttontext;
+            border-image: initial;
+            padding: 1px 6px;
+        }
+    </style>
+    <script src="options.js"></script>
+</head>
+<body>
+    <div id="blacklistContainer">
+        <label>Sites to 'blacklist'</label>
+        <ul id="blacklist">
+
+        </ul>
+        Add One <input type="text" id="addOneInput"> <button class="addOneButton"><a class="addOne" id="blacklistAddOne">enter</a></button>
+    </div>
+
+    <div id="domainContainer">
+        <label>Domain for sites in preview and staging </label>
+        <p><small>Only the first item will be used as the domain</small></p>
+        <ul id="domainList"></ul>
+        Add One <input type="text" id="domainInput"> <button class="addOneButton"><a class="addOne" id="domainAddOne">enter</a></button>
+    </div>
+</body>
+</html>

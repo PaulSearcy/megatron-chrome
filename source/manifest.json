@@ -1,10 +1,14 @@
 {
-  "name": "IGX ID Copy",
-  "manifest_version": 2,
-  "version": "1.0",
-  "description": "Checks the page to see if it's powered by the IGX CMS and if it does enables user to copy xID upon icon click",
-  "browser_action": {
-        "default_icon": "icon.png"
+    "name": "IGX Helper Extension",
+    "manifest_version": 2,
+    "version": "1.2",
+    "description": "Set of functions to help out with common operations when working in IGX CMS",
+    "options_ui":{
+        "page": "options.html"
+    },
+    "browser_action": {
+        "default_icon": "icon.png",
+        "default_popup": "popup.html"
     },
     "background": {
         "scripts": [
@@ -19,6 +23,8 @@
     "permissions": [
         "tabs",
         "contextMenus",
+        "clipboardWrite",
+        "storage",
         "http://*/",
         "https://*/"
     ]
